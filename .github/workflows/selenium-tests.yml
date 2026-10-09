@@ -1,0 +1,146 @@
+# ============================================================================
+# WORKFLOW: Selenium + Cucumber Tests (Push / PR Gate)
+# ============================================================================
+#
+# PURPOSE
+#   Runs as a quality gate on every push to main and every pull request.
+#   If tests fail, the PR is blocked from merging. Same role as the sibling
+#   healthhub-playwright repo's playwright.yml — same trigger shape, same
+#   artifact-upload idiom — so the CI concepts transfer directly between the
+#   two frameworks even though the test stack (Java/Maven/TestNG) is
+#   completely different from the other repo's (Node/Playwright).
+#
+# WHY THIS PIPELINE IS SIMPLER THAN healthhub-playwright's
+#   Playwright's CI has to start the app itself (webServer: Express + Vite,
+#   two processes) before it can test it, and shards across 4 parallel jobs.
+#   This pipeline doesn't start HealthHub at all — it points straight at the
+#   already-running, centrally-hosted instance at healthhub.qualintia.com
+#   (see base.url / api.base.url below). That's only possible because of
+#   HealthHub's Oct 2026 hosting decision: one shared, always-on URL, not a
+#   container participants (or CI) have to spin up. No sharding either —
+#   this suite is 4 Cucumber scenarios + 2 API tests, well under a minute,
+#   so splitting it across parallel jobs would add overhead, not save time.
+#
+# NO SERVER-STARTUP STEP, NO CHROME-INSTALL STEP
+#   ubuntu-latest runner images ship with Google Chrome pre-installed.
+#   WebDriverManager (already a framework dependency, see pom.xml) detects
+#   the installed Chrome version at runtime and downloads the matching
+#   chromedriver automatically — the exact same mechanism you rely on when
+#   running `mvn test` locally. Nothing extra to configure for CI.
+#
+# ============================================================================
+
+name: Selenium Tests
+
+# ── TRIGGER ──────────────────────────────────────────────────────────────────
+on:
+  push:
+    branches: [main]
+    # Fires on every commit pushed directly to main — validates main is green.
+
+  pull_request:
+    branches: [main]
+    # Fires when a PR is opened, updated, or reopened — targeting main.
+    # GitHub shows a red/green check on the PR based on this workflow's result.
+
+  workflow_dispatch:
+    # Lets you trigger a run manually from the Actions tab (Run workflow
+    # button) with no push or PR needed — handy for a live Day 4 demo.
+
+jobs:
+  test:
+    timeout-minutes: 15
+    # Cancels the job if it hasn't finished in 15 minutes. This suite
+    # normally runs in well under 2 — a generous ceiling, not a tight one.
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────
+      # Downloads the repository code onto the runner VM. Must be first.
+      - uses: actions/checkout@v4
+
+      # ── JDK setup ─────────────────────────────────────────────────────────
+      # distribution: temurin — Eclipse Temurin, the most common free/open
+      #   OpenJDK build used in CI; matches what the setup guide has
+      #   participants install locally.
+      # java-version: '21' — must match <maven.compiler.release> in pom.xml.
+      # cache: maven — caches ~/.m2/repository between runs, keyed on the
+      #   pom.xml hash. First run downloads every dependency from Maven
+      #   Central; later runs restore from cache unless pom.xml changes.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # ── Run the suite against the live hosted HealthHub instance ───────────
+      # mvn test:
+      #   Uses the `testng` Maven profile (active by default — see pom.xml's
+      #   comment on why both profiles exist). Runs testng.xml: the 4
+      #   Cucumber scenarios (TestNGRunner) plus the 2 plain API tests,
+      #   including the deliberate flaky one.
+      #
+      # -Dheadless=true:
+      #   Overrides config.properties' headless=false. No display server
+      #   exists on a CI runner — headless Chrome is required here, exactly
+      #   as config.properties' own top comment documents (every property
+      #   can be overridden with a matching -D flag).
+      #
+      # -Dbase.url / -Dapi.base.url:
+      #   Overrides the localhost:5173 / localhost:3001 defaults to point at
+      #   the real, centrally-hosted training instance instead. This is the
+      #   one line that would change if HealthHub's hosting URL ever moves.
+      #
+      # Retries: the deliberate flaky test's ~30% failure rate is already
+      #   handled inside the framework itself (TestListener/RetryAnalyzer,
+      #   max 2 retries, wired in testng.xml) — nothing extra needed at the
+      #   CI level for that.
+      - name: Run Selenium + Cucumber tests
+        run: >
+          mvn test
+          -Dheadless=true
+          -Dbase.url=https://healthhub.qualintia.com
+          -Dapi.base.url=https://healthhub.qualintia.com/api/v1
+
+      # ── Node setup, for the Allure report generator only ────────────────────
+      # if: ${{ !cancelled() }} — run this (and everything after) even if the
+      #   tests above failed, so a failing run still produces a report. Only
+      #   skip if the run was manually cancelled.
+      #
+      # This is a Java project with no Node/package.json of its own — Node is
+      # installed here purely to run the Allure report CLI via npx, same tool
+      # and same command as healthhub-playwright's CI uses. Same report
+      # format across both of this course's frameworks, even though the test
+      # stacks don't share a single line of code.
+      - name: Set up Node (for Allure report generation)
+        if: ${{ !cancelled() }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ── Generate the Allure HTML report ──────────────────────────────────
+      # mvn test (via allure-testng / allure-cucumber7-jvm, woven in through
+      # the aspectjweaver javaagent in pom.xml) writes raw result files to
+      # target/allure-results/. That raw format isn't human-readable on its
+      # own — this step converts it into a browsable HTML report.
+      #
+      # npx allure generate <input> --clean -o <output>:
+      #   npx fetches the `allure-commandline` npm package on demand (no
+      #   package.json install step needed first) and runs it once.
+      - name: Generate Allure report
+        if: ${{ !cancelled() }}
+        run: npx allure generate target/allure-results --clean -o target/allure-report
+
+      # ── Upload the HTML report ───────────────────────────────────────────
+      # Downloadable from the run's Summary page in the Actions tab.
+      # To view locally: unzip the artifact, then `npx allure open <folder>`
+      # (same as healthhub-playwright's documented viewing method — Allure
+      # reports need to be served, not opened as a raw file://).
+      - name: Upload Allure report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/allure-report/
+          retention-days: 14

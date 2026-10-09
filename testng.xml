@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="HealthHub Selenium Suite" verbose="1">
+    <listeners>
+        <listener class-name="com.healthhub.listeners.TestListener"/>
+    </listeners>
+
+    <test name="HealthHub Cucumber Scenarios">
+        <classes>
+            <class name="com.healthhub.runners.TestNGRunner"/>
+        </classes>
+    </test>
+
+    <test name="HealthHub API Tests">
+        <classes>
+            <class name="com.healthhub.api.AppointmentsApiTest"/>
+            <class name="com.healthhub.api.FlakyAppointmentsApiTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,17 @@
+# Build output
+target/
+
+# Allure results/reports generated outside target/ (e.g. via mvn allure:serve)
+allure-results/
+allure-report/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+
+# Selenium/WebDriverManager cache (machine-local, not project state)
+.cache/
