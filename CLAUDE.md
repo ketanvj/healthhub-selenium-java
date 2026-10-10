@@ -3,8 +3,8 @@
 Training-reference automation framework for the HealthHub app. Selenium
 WebDriver + Cucumber (Gherkin) + TestNG, with a secondary JUnit Platform
 runner kept working as a backup/comparison example. Built against the real
-HealthHub app (React/Vite frontend on :5173, Express/SQLite backend on
-:3001, API mounted at `/api/v1`).
+HealthHub app, centrally hosted at `https://healthhub.qualintia.com`
+(API mounted at `/api/v1`).
 
 ## Discovering real locators and API behavior (no source access)
 
@@ -40,11 +40,11 @@ facts stated elsewhere in this file (the `/api/v1` mount point, the
 
 ## Quick start
 
-```bash
-# HealthHub app must already be running (separate repo/terminal)
-#   frontend: npm run dev   (port 5173)
-#   backend:  npm run dev   (port 3001)
+HealthHub is centrally hosted at `https://healthhub.qualintia.com` —
+nothing to start locally. `config.properties` already points there by
+default.
 
+```bash
 mvn test
 ```
 
