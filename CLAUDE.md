@@ -184,6 +184,14 @@ sibling `healthhub-playwright` framework, adapted for this stack.
 | `writing-page-objects` | "create a page object for X", "add a POM for X" |
 
 The same agents/skill exist for GitHub Copilot under `.github/agents/` and
-`.github/skills/` (plain markdown, no YAML frontmatter — Copilot's format).
+`.github/skills/` (plain markdown, this one using YAML frontmatter where it
+matters — `tools:`/`agents:` restrictions — unlike these two). **Copilot's
+side now has more than this file does** (added Oct 14, `.github/` only, no
+`.claude/` equivalent yet): agents `test-report-reader` (tool-restricted,
+read-only), `locator-researcher` and `convention-checker` (subagents), and
+`page-coverage-builder` (coordinator, delegates to those two); skills
+`selenium-wait-strategies` and `selenium-exception-debug`. See
+`.github/copilot-instructions.md`'s own table for the full, current list —
+don't assume this file's two tables above are the complete picture anymore.
 Custom instructions equivalent to this file live in
 `.github/copilot-instructions.md`.

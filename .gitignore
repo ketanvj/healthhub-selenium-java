@@ -15,3 +15,6 @@ allure-report/
 
 # Selenium/WebDriverManager cache (machine-local, not project state)
 .cache/
+
+# Playwright MCP session artifacts (local debug output, not project state)
+.playwright-mcp/

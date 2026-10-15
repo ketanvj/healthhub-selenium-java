@@ -129,10 +129,18 @@ Allure results land in `target/allure-results/`. Serve locally with
 ## Agents and skills
 
 Equivalent agents/skills live in both `.claude/` (YAML-frontmatter format,
-for Claude Code) and `.github/` (plain markdown, this format):
+for Claude Code) and `.github/` (plain markdown, this format), **except
+where noted below** — several were added Oct 14 in `.github/` only and do
+not yet have a `.claude/` counterpart, don't assume parity without checking:
 
-| Agent/skill | Location | Trigger phrases |
-|---|---|---|
-| `flaky-test-diagnostician` | `.github/agents/` | "why is this test flaky", "diagnose the flaky test" |
-| `conventions-reviewer` | `.github/agents/` | "review this against conventions" |
-| `writing-page-objects` | `.github/skills/` | "create a page object for X" |
+| Agent/skill | Location | Trigger phrases | `.claude/` equivalent? |
+|---|---|---|---|
+| `flaky-test-diagnostician` | `.github/agents/` | "why is this test flaky", "diagnose the flaky test" | Yes |
+| `conventions-reviewer` | `.github/agents/` | "review this against conventions" | Yes |
+| `test-report-reader` | `.github/agents/` | "summarize the test results", "what failed in the last run" (tool-restricted, not just prose-restricted — see its own file) | **No, `.github/` only** |
+| `locator-researcher` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `page-coverage-builder` | **No, `.github/` only** |
+| `convention-checker` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `page-coverage-builder` | **No, `.github/` only** |
+| `page-coverage-builder` | `.github/agents/` | "add view-only coverage for [page]" (coordinator, delegates to the two subagents above) | **No, `.github/` only** |
+| `writing-page-objects` | `.github/skills/` | "create a page object for X" | Yes |
+| `selenium-wait-strategies` | `.github/skills/` | "fix hardcoded waits", "tests are flaky due to timing" | **No, `.github/` only** |
+| `selenium-exception-debug` | `.github/skills/` | "StaleElementReferenceException", "ElementNotInteractableException", or similar WebDriver errors | **No, `.github/` only** |
