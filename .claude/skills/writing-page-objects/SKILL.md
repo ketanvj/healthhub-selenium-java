@@ -1,6 +1,6 @@
 ---
 name: writing-page-objects
-description: Create Page Object classes for the HealthHub Selenium + Gherkin + Java framework. Use when adding a new page, extracting locators/interactions out of a step definition into a POM, or when asked to create a page object. TRIGGER on "create a page object", "add a page object for X", "extract page interactions", "make a page class".
+description: Write Page Object classes for the HealthHub Selenium + Gherkin + Java framework. Use when adding a new page, extracting locators/interactions out of a step definition into a POM, or when asked to create, write, build, or implement a page object. TRIGGER on "create a page object", "write a page object", "build a page object", "add a page object for X", "implement the X page", "extract page interactions", "make a page class".
 ---
 
 # Writing Page Objects
