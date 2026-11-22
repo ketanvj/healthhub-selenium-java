@@ -2,7 +2,7 @@
 
 One story, three read-only specialists in parallel, then a human decision. The story is `docs/stories/HEALTH-247.md`, a patient booking an appointment.
 
-**Not yet rehearsed.** Parts of this depend on the VS Code version and settings. Check each item below before showing it.
+**First rehearsed 22 Nov 2026:** the three subagents ran in parallel. Parts of this depend on the VS Code version and settings, so check each step below on the machine you'll present from.
 
 ## Files
 
@@ -19,10 +19,17 @@ The three specialists have `user-invocable: false`, so they don't appear in the 
 
 ## Before the first run
 
-- VS Code 1.109 or later (parallel subagents arrived in January 2026).
-- Setting `chat.customAgentInSubagent.enabled` is on.
-- Agent dropdown: **Story Review Lead** is listed.
-- **Tool name to confirm:** GitHub's docs say to list `runSubagent` in `tools`; the VS Code docs say the Copilot harness uses its own task tool and `agent` is enough. If the coordinator says it can't call subagents, add `runSubagent` to its `tools` line and try again.
+1. **VS Code 1.109 or later** (Code > About Visual Studio Code). Parallel subagents arrived in January 2026.
+2. **Turn on custom agents as subagents** (needed, confirmed 22 Nov):
+   - Code > Settings… > Settings (or Cmd + ,).
+   - In the search box, type `subagent`.
+   - Tick **Chat › Custom Agent In Subagent: Enabled**. It applies straight away.
+   - Alternative: Cmd + Shift + P > "Open User Settings (JSON)", add `"chat.customAgentInSubagent.enabled": true`, save.
+   - Set it in your user settings, not in the repo.
+3. **Reload:** Cmd + Shift + P > "Developer: Reload Window", so VS Code picks up the files in `.github/agents/`.
+4. **Agent dropdown** (bottom of the Chat box): **Story Review Lead** is listed. The three specialists aren't, on purpose.
+
+**Confirmed in the 22 Nov run:** with the setting on, `tools: ['agent', ...]` was enough; `runSubagent` wasn't needed. All three subagents started together ("3 subagents running"). Copilot picked the model itself ("Auto routed task to GPT-5 Luna"), so another run may use a different model and give a different summary.
 
 ## Prompt 1 (with Story Review Lead selected)
 
