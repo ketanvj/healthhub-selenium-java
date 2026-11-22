@@ -71,6 +71,21 @@ Expected answer: `appointment-cancel-btn`. Then switch back to **Story Review Le
 
 Then `git status --short` and `git diff`.
 
+**What the 22 Nov run gave (after the locator):** one scenario, changes only in the three files, the verified `appointment-cancel-btn`, a timestamped title and a date 30 days ahead. Copilot couldn't run Maven.
+- **It can't fail.** The absence check only looks at page 1 of the table (10 of about 199, sorted by date). Proved by changing `click(cancelBtn)` to `click(saveBtn)`: the test **still passed**.
+- Same kind of false pass as "Book a new appointment", this time in code the agent wrote itself.
+- **For the room:** "Before you trust a test, ask how it could fail. Then make it fail on purpose."
+
+**Prompt 3 (fix the check):**
+
+```
+The absence check only looks at the first page of the appointments table, so it would pass even if Cancel created the appointment. Check through the API instead: use ApiClient.authenticated() to list the patient's appointments and assert none has the cancelled title. Change AppointmentSteps.java only, and remove rowDoesNotExistForTitle from AppointmentsPage.java if it's no longer used.
+```
+
+Then repeat the Save trick: the test must now fail. Undo it, and delete the "Cancelled appointment …" records the Save runs created.
+
+**Run it headed** (`mvn test -Dcucumber.filter.name="Canceling a filled appointment form"`). With `-Dheadless=true`, every appointment scenario times out on `nav-appointments` (sidebar hidden in a small headless window).
+
 ## If it doesn't delegate
 
 Don't keep re-prompting. Open `story-review-lead.md`, show the `agents:` and `tools:` lines, explain the intended flow, and say plainly that this run didn't delegate.
