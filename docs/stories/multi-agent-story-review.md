@@ -59,6 +59,16 @@ Add one Cucumber scenario for AC7: cancelling a filled-in booking form creates n
 
 **Look for:** a unique title, no invented `data-testid`, and changes only in those three files. If it says it needs a Cancel button locator, that's the right answer: discover it live (see `CLAUDE.md`, "Discovering real locators") before writing the step.
 
+**What the 22 Nov run gave (Prompt 2):** it read the page-object and step rules, found no Cancel locator in `AppointmentsPage.java`, and **stopped without editing anything**, asking for the verified `data-testid`. That's the guard in the prompt working, and a good moment for the room: "It said 'I don't know' instead of inventing a locator."
+
+**Next step, live discovery** (the repo's rule: find locators in the running app, not the source). Switch the Agent dropdown to **Agent** (the default, which has the Playwright MCP tools) and ask:
+
+```
+Using the Playwright MCP browser, log in at https://healthhub.qualintia.com as patient@healthhub.test with password Test123!, go to Appointments, click New Appointment, and tell me the data-testid of the form's Cancel button. Don't change any files.
+```
+
+Expected answer: `appointment-cancel-btn`. Then switch back to **Story Review Lead** and reply: "The verified Cancel data-testid is appointment-cancel-btn. Go ahead with the AC7 scenario."
+
 Then `git status --short` and `git diff`.
 
 ## If it doesn't delegate
