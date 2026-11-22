@@ -141,6 +141,10 @@ not yet have a `.claude/` counterpart, don't assume parity without checking:
 | `locator-researcher` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `page-coverage-builder` | **No, `.github/` only** |
 | `convention-checker` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `page-coverage-builder` | **No, `.github/` only** |
 | `page-coverage-builder` | `.github/agents/` | "add view-only coverage for [page]" (coordinator, delegates to the two subagents above) | **No, `.github/` only** |
+| `story-review-lead` | `.github/agents/` | "review the story in docs/stories/..." (coordinator, runs the three subagents below in parallel, then stops; see `docs/stories/multi-agent-story-review.md`) | **No, `.github/` only** |
+| `story-analyst` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `story-review-lead` | **No, `.github/` only** |
+| `test-designer` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `story-review-lead` | **No, `.github/` only** |
+| `coverage-checker` | `.github/agents/` | subagent only (`user-invocable: false`), invoked by `story-review-lead` | **No, `.github/` only** |
 | `writing-page-objects` | `.github/skills/` | "create a page object for X" | Yes |
 | `selenium-wait-strategies` | `.github/skills/` | "fix hardcoded waits", "tests are flaky due to timing" | **No, `.github/` only** |
 | `selenium-exception-debug` | `.github/skills/` | "StaleElementReferenceException", "ElementNotInteractableException", or similar WebDriver errors | **No, `.github/` only** |
