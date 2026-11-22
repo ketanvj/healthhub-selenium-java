@@ -82,6 +82,18 @@ Then `git status --short` and `git diff`.
 The absence check only looks at the first page of the appointments table, so it would pass even if Cancel created the appointment. Check through the API instead: use ApiClient.authenticated() to list the patient's appointments and assert none has the cancelled title. Change AppointmentSteps.java only, and remove rowDoesNotExistForTitle from AppointmentsPage.java if it's no longer used.
 ```
 
+**What the 22 Nov run gave (Prompt 3):** it moved the check to the API, but called `GET /appointments` with no parameters, which returns only page 1 (10 of about 200, the response's `pagination` field says so). The Save trick: **still passed**. It fixed the symptom and repeated the cause, and never checked how the API pages its results.
+
+**Prompt 4:**
+
+```
+The API call only returns the first page: 10 of about 200 appointments (see the pagination field in the response). Ask for the newest appointments instead: GET /appointments?sort=created_at:desc&limit=50, then assert none has the cancelled title. Change AppointmentSteps.java only.
+```
+
+**Result:** passes with Cancel, fails with Save. Fixed, and proved by making it fail.
+
+**The story for the room, end to end:** parallel review; the agent stopped instead of guessing a locator; its first test couldn't fail; its first fix couldn't fail either; a human made it fail on purpose, twice, and that's how both were found.
+
 Then repeat the Save trick: the test must now fail. Undo it, and delete the "Cancelled appointment …" records the Save runs created.
 
 **Run it headed** (`mvn test -Dcucumber.filter.name="Canceling a filled appointment form"`). With `-Dheadless=true`, every appointment scenario times out on `nav-appointments` (sidebar hidden in a small headless window).
