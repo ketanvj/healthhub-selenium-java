@@ -45,13 +45,19 @@ Review the story in docs/stories/HEALTH-247.md. Run Story Analyst, Test Designer
 
 **A QA moment to look for:** the "Book a new appointment" scenario books a date of 2026-01-01 (now in the past, though AC4 asks for a future date), and checks that "Annual Check-up" appears in the list. The shared patient account already has many "Annual Check-up" appointments, so this check can pass even if the new booking failed. See whether Coverage Checker spots it.
 
+**What the 22 Nov run gave (Prompt 1):** three subagents in parallel, one combined summary, no files changed.
+- 5 open questions (Type required, Duration saved, "future" date and time zone, Title rules, failure handling).
+- Coverage: AC3, AC6, AC7 not covered; AC1, AC2, AC4, AC5 partly covered through "Book a new appointment". It caught the past date (2026-01-01).
+- **It missed the false pass.** `rowExistsForTitle()` only checks that some row contains "Annual Check-up", and the shared patient already has dozens. The scenario passes even if the booking fails. Coverage Checker's own instructions ask about exactly this, and it still didn't report it. That's the point for the room: the agents speed up the review, and a human still reads it.
+- Compared with Claude Code on the Playwright repo: the same flow, and parallel in both. Copilot's summary is shorter and quotes less evidence.
+
 ## Prompt 2 (after reading the summary)
 
-Decide the gaps after the first rehearsal, then name them, for example:
+```
+Add one Cucumber scenario for AC7: cancelling a filled-in booking form creates no appointment. Use a title that includes a timestamp, so the check can't match old data. Add it to src/test/resources/features/appointments.feature, with any new steps in AppointmentSteps.java and any new page methods in AppointmentsPage.java. Only use data-testid values that already appear in AppointmentsPage.java; if you need one that isn't there, stop and tell me instead of guessing. Don't create or change any other file.
+```
 
-```
-Add a Cucumber scenario for these missing checks only: [gap 1], [gap 2]. Add it to src/test/resources/features/appointments.feature, with any new steps in AppointmentSteps.java. Reuse the existing AppointmentsPage. Don't create or change any other file.
-```
+**Look for:** a unique title, no invented `data-testid`, and changes only in those three files. If it says it needs a Cancel button locator, that's the right answer: discover it live (see `CLAUDE.md`, "Discovering real locators") before writing the step.
 
 Then `git status --short` and `git diff`.
 
