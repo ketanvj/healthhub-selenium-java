@@ -1,3 +1,8 @@
+---
+name: writing-api-tests
+description: Write plain TestNG API contract tests for the HealthHub REST API (not Gherkin). Use when adding coverage for an endpoint that doesn't have a test yet, or when asked to create, write, build, or add an API test for X.
+---
+
 # writing-api-tests
 
 Write plain TestNG API contract tests for the HealthHub REST API (not
