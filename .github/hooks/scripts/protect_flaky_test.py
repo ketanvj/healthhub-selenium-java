@@ -91,6 +91,14 @@ def extract_target_paths(tool_input):
     original bug: a real Shape-B call silently found nothing and the
     edit went through unblocked. Both shapes are checked now.
     """
+    # Shape D -- Copilot CLI and the GitHub cloud agent (seen 25 Nov 2026):
+    # apply_patch's tool_input is the raw patch TEXT, not an object. The
+    # .get() calls below crashed on it, and in the CLI "a preToolUse hook
+    # that fails denies the call" -- so every edit was blocked, not just
+    # edits to the protected file. Plain text: search it directly.
+    if not isinstance(tool_input, dict):
+        return [str(tool_input)]
+
     paths = []
     for field in PATH_FIELDS:
         value = tool_input.get(field)
@@ -145,6 +153,14 @@ def main():
         # output at all (the normal exit below, reached whenever this
         # "if" is false) means "I have no objection, proceed."
         print(json.dumps({
+            # Top-level keys: Copilot CLI / cloud agent format.
+            # hookSpecificOutput: VS Code (Claude Code) format.
+            "permissionDecision": "deny",
+            "permissionDecisionReason": (
+                f"{PROTECTED_FILE} is the deliberately flaky test for the "
+                "debugging exercise (CLAUDE.md, section 6). This hook blocks "
+                "edits to it regardless of what the agent decided to do."
+            ),
             "hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
                 "permissionDecision": "deny",
