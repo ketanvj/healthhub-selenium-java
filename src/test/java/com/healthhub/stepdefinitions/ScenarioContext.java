@@ -3,6 +3,7 @@ package com.healthhub.stepdefinitions;
 import com.healthhub.pages.AppointmentsPage;
 import com.healthhub.pages.DashboardPage;
 import com.healthhub.pages.LoginPage;
+import com.healthhub.pages.MedicationsPage;
 
 /**
  * Shared state across step definition classes within one scenario, injected
@@ -15,6 +16,7 @@ public class ScenarioContext {
     private LoginPage loginPage;
     private DashboardPage dashboardPage;
     private AppointmentsPage appointmentsPage;
+    private MedicationsPage medicationsPage;
 
     public LoginPage getLoginPage() {
         return loginPage;
@@ -38,5 +40,13 @@ public class ScenarioContext {
 
     public void setAppointmentsPage(AppointmentsPage appointmentsPage) {
         this.appointmentsPage = appointmentsPage;
+    }
+
+    public MedicationsPage getMedicationsPage() {
+        return medicationsPage;
+    }
+
+    public void setMedicationsPage(MedicationsPage medicationsPage) {
+        this.medicationsPage = medicationsPage;
     }
 }
