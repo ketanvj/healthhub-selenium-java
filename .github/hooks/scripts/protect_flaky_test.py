@@ -107,6 +107,13 @@ def extract_target_paths(tool_input):
                 if value:
                     paths.append(str(value))
 
+    # Shape C -- a patch tool (seen live 25 Nov 2026: "Apply Patch"),
+    # which carries the file name inside the patch text, e.g.
+    # "*** Update File: .../FlakyAppointmentsApiTest.java", not in any
+    # path field. Shapes A and B found nothing and the edit went through.
+    # Fallback for this and any future shape: search the whole input.
+    paths.append(json.dumps(tool_input))
+
     return paths
 
 
