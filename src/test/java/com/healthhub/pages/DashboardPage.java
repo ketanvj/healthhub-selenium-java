@@ -7,6 +7,7 @@ public class DashboardPage extends BasePage {
 
     private final By welcomeHeading = testId("dashboard-welcome");
     private final By appointmentsNavLink = testId("nav-appointments");
+    private final By healthRecordsNavLink = testId("nav-health-records");
 
     public DashboardPage(WebDriver driver) {
         super(driver);
@@ -23,5 +24,10 @@ public class DashboardPage extends BasePage {
     public AppointmentsPage goToAppointments() {
         click(appointmentsNavLink);
         return new AppointmentsPage(driver);
+    }
+
+    public HealthRecordsPage goToHealthRecords() {
+        click(healthRecordsNavLink);
+        return new HealthRecordsPage(driver);
     }
 }
