@@ -2,6 +2,7 @@ package com.healthhub.stepdefinitions;
 
 import com.healthhub.pages.AppointmentsPage;
 import com.healthhub.pages.DashboardPage;
+import com.healthhub.pages.HealthRecordsPage;
 import com.healthhub.pages.LoginPage;
 
 /**
@@ -15,6 +16,7 @@ public class ScenarioContext {
     private LoginPage loginPage;
     private DashboardPage dashboardPage;
     private AppointmentsPage appointmentsPage;
+    private HealthRecordsPage healthRecordsPage;
 
     public LoginPage getLoginPage() {
         return loginPage;
@@ -38,5 +40,13 @@ public class ScenarioContext {
 
     public void setAppointmentsPage(AppointmentsPage appointmentsPage) {
         this.appointmentsPage = appointmentsPage;
+    }
+
+    public HealthRecordsPage getHealthRecordsPage() {
+        return healthRecordsPage;
+    }
+
+    public void setHealthRecordsPage(HealthRecordsPage healthRecordsPage) {
+        this.healthRecordsPage = healthRecordsPage;
     }
 }
